@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:yuvify_website/coming_soon.dart';
+import 'package:yuvify_website/landing_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,10 +12,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Yuvify',
       home: const ComingSoon(),
     );
   }
 }
-
-
