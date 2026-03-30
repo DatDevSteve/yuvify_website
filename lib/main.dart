@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yuvify_website/landing_page.dart';
 import 'package:yuvify_website/landing_page_harshit.dart';
+import 'package:yuvify_website/landing_page_hridhan.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Yuvify',
-      home: const TestPage(),
+      home: const LandingPageHridhan(),
     );
   }
 }
