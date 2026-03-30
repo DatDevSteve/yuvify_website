@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yuvify_website/landing_page.dart';
-import 'package:yuvify_website/landing_page_redesign.dart';
+import 'package:yuvify_website/landing_page_harshit.dart';
 
 void main() {
   runApp(const MyApp());
