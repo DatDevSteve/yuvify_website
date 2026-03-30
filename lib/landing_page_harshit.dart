@@ -9,6 +9,7 @@ class TestPage extends StatefulWidget {
   static const Color brown = Color(0xFF866E53);
   static const Color peach = Color(0x80EFD2B0);
   static const Color ink = Color(0xFF1E1E1E);
+  static const Color accentRed = Colors.red;
 
   @override
   State<TestPage> createState() => _TestPageState();
@@ -19,58 +20,59 @@ class _TestPageState extends State<TestPage> {
   final GlobalKey _formatsSectionKey = GlobalKey();
   final GlobalKey _contactSectionKey = GlobalKey();
 
-  Future<void> _scrollToSection(GlobalKey key) async {
-    final sectionContext = key.currentContext;
-    if (sectionContext == null) return;
+  Future<void> _scrollToSection(GlobalKey key, {double alignment = 0.06}) async {
+    final targetContext = key.currentContext;
+    if (targetContext == null) return;
 
     await Scrollable.ensureVisible(
-      sectionContext,
+      targetContext,
       duration: const Duration(milliseconds: 700),
       curve: Curves.easeInOutCubic,
-      alignment: 0.08,
+      alignment: alignment,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    final isMobile = width < 760;
-    final isTablet = width >= 760 && width < 1180;
+    final isMobile = width < 768;
+    final isTablet = width >= 768 && width < 1180;
+    final useDrawer = width < 1050;
 
     return Scaffold(
       backgroundColor: TestPage.background,
-      endDrawer: isTablet || isMobile
+      endDrawer: useDrawer
           ? Drawer(
               backgroundColor: TestPage.background,
               child: SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
-                    vertical: 28,
+                    vertical: 24,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _RedesignDrawerNavTile(
+                      _DrawerNavTile(
                         label: 'About',
                         onTap: () {
                           Navigator.of(context).pop();
                           _scrollToSection(_aboutSectionKey);
                         },
                       ),
-                      _RedesignDrawerNavTile(label: 'Careers', onTap: () {}),
-                      _RedesignDrawerNavTile(
+                      const _DrawerNavTile(label: 'Careers'),
+                      _DrawerNavTile(
                         label: 'Events',
                         onTap: () {
                           Navigator.of(context).pop();
                           _scrollToSection(_formatsSectionKey);
                         },
                       ),
-                      _RedesignDrawerNavTile(
+                      _DrawerNavTile(
                         label: 'Contact Us',
                         onTap: () {
                           Navigator.of(context).pop();
-                          _scrollToSection(_contactSectionKey);
+                          _scrollToSection(_contactSectionKey, alignment: 0.1);
                         },
                       ),
                     ],
@@ -84,30 +86,27 @@ class _TestPageState extends State<TestPage> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              _RedesignHeader(
-                isCompact: isTablet || isMobile,
+              _LandingHeader(
+                useDrawer: useDrawer,
+                isMobile: isMobile,
                 onAboutTap: () => _scrollToSection(_aboutSectionKey),
                 onEventsTap: () => _scrollToSection(_formatsSectionKey),
                 onContactTap: () => _scrollToSection(_contactSectionKey),
               ),
-              _RedesignHeroSection(isMobile: isMobile, isTablet: isTablet),
+              _ContentFrame(
+                child: _HeroSection(isMobile: isMobile, isTablet: isTablet),
+              ),
               KeyedSubtree(
                 key: _aboutSectionKey,
-                child: _RedesignAboutSection(
-                  isMobile: isMobile,
-                  isTablet: isTablet,
-                ),
+                child: _AboutSection(isMobile: isMobile, isTablet: isTablet),
               ),
               KeyedSubtree(
                 key: _formatsSectionKey,
-                child: _RedesignFormatsSection(
-                  isMobile: isMobile,
-                  isTablet: isTablet,
-                ),
+                child: _ProgramsSection(isMobile: isMobile, isTablet: isTablet),
               ),
               KeyedSubtree(
                 key: _contactSectionKey,
-                child: _RedesignFooterSection(isMobile: isMobile),
+                child: _FooterSection(isMobile: isMobile, isTablet: isTablet),
               ),
             ],
           ),
@@ -117,15 +116,17 @@ class _TestPageState extends State<TestPage> {
   }
 }
 
-class _RedesignHeader extends StatelessWidget {
-  const _RedesignHeader({
-    required this.isCompact,
+class _LandingHeader extends StatelessWidget {
+  const _LandingHeader({
+    required this.useDrawer,
+    required this.isMobile,
     required this.onAboutTap,
     required this.onEventsTap,
     required this.onContactTap,
   });
 
-  final bool isCompact;
+  final bool useDrawer;
+  final bool isMobile;
   final VoidCallback onAboutTap;
   final VoidCallback onEventsTap;
   final VoidCallback onContactTap;
@@ -134,56 +135,59 @@ class _RedesignHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.fromLTRB(
-        isCompact ? 12 : 32,
+        useDrawer ? 8 : 32,
         0,
-        isCompact ? 12 : 32,
-        isCompact ? 12 : 20,
+        useDrawer ? 8 : 32,
+        useDrawer ? 12 : 18,
       ),
       child: Material(
-        elevation: 7,
+        color: TestPage.background,
+        elevation: 5,
         shadowColor: Colors.black26,
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(20),
           bottomRight: Radius.circular(20),
         ),
-        color: TestPage.background,
-        child: Container(
-          height: isCompact ? 84 : 116,
-          padding: EdgeInsets.symmetric(horizontal: isCompact ? 16 : 28),
-          child: Row(
-            children: [
-              Flexible(
-                child: Image.asset(
-                  'lib/assets/logo_text.png',
-                  fit: BoxFit.contain,
-                  height: isCompact ? 42 : 62,
-                ),
-              ),
-              const Spacer(),
-              if (isCompact)
-                Builder(
-                  builder: (context) => IconButton(
-                    onPressed: () => Scaffold.of(context).openEndDrawer(),
-                    icon: const Icon(Icons.menu_rounded),
-                    color: TestPage.ink,
-                    iconSize: 30,
-                  ),
-                )
-              else
-                Wrap(
-                  spacing: 18,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    _RedesignHeaderButton(label: 'About', onTap: onAboutTap),
-                    const _RedesignHeaderButton(label: 'Careers'),
-                    _RedesignHeaderButton(label: 'Events', onTap: onEventsTap),
-                    _RedesignHeaderButton(
-                      label: 'Contact Us',
-                      onTap: onContactTap,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: useDrawer ? 72 : 116),
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: useDrawer ? 14 : 28,
+              vertical: useDrawer ? 10 : 4,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Image.asset(
+                      'lib/assets/logo_text.png',
+                      fit: BoxFit.contain,
+                      height: useDrawer ? 44 : 78,
                     ),
-                  ],
+                  ),
                 ),
-            ],
+                if (useDrawer)
+                  Builder(
+                    builder: (context) => IconButton(
+                      onPressed: () => Scaffold.of(context).openEndDrawer(),
+                      icon: const Icon(Icons.menu_rounded),
+                      color: TestPage.ink,
+                      iconSize: 30,
+                    ),
+                  )
+                else
+                  Wrap(
+                    spacing: isMobile ? 12 : 20,
+                    children: [
+                      _HeaderButton(label: 'About', onTap: onAboutTap),
+                      const _HeaderButton(label: 'Careers'),
+                      _HeaderButton(label: 'Events', onTap: onEventsTap),
+                      _HeaderButton(label: 'Contact Us', onTap: onContactTap),
+                    ],
+                  ),
+              ],
+            ),
           ),
         ),
       ),
@@ -191,8 +195,8 @@ class _RedesignHeader extends StatelessWidget {
   }
 }
 
-class _RedesignHeroSection extends StatelessWidget {
-  const _RedesignHeroSection({
+class _HeroSection extends StatelessWidget {
+  const _HeroSection({
     required this.isMobile,
     required this.isTablet,
   });
@@ -202,78 +206,56 @@ class _RedesignHeroSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool stacked = isMobile || isTablet;
-    final heroCopy = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'A platform built for the youth, by the youth',
-          style: GoogleFonts.inriaSans(
-            fontSize: isMobile ? 28 : isTablet ? 36 : 40,
-            height: 1.15,
-            color: TestPage.green,
-          ),
-        ),
-        SizedBox(height: isMobile ? 20 : 28),
-        ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: stacked ? 560 : 680),
-          child: Text(
-            'Yuvify brings together curious voices, bold ideas and meaningful action through content, conversations and youth-led experiences.',
-            style: GoogleFonts.inriaSans(
-              fontSize: isMobile ? 18 : 22,
-              height: 1.45,
-              color: TestPage.ink,
-            ),
-          ),
-        ),
-      ],
-    );
-    final heroGraphic = Align(
-      alignment: stacked ? Alignment.center : Alignment.centerRight,
-      child: Container(
-        constraints: BoxConstraints(
-          maxWidth: isMobile ? 320 : isTablet ? 420 : 520,
-        ),
-        child: Image.asset(
-          'lib/assets/mind_map.png',
-          fit: BoxFit.contain,
-        ),
-      ),
-    );
+    final stacked = isMobile || isTablet;
 
     return Padding(
       padding: EdgeInsets.fromLTRB(
-        isMobile ? 20 : 46,
-        isMobile ? 18 : 10,
-        isMobile ? 20 : 46,
-        isMobile ? 28 : 40,
+        isMobile ? 18 : 0,
+        isMobile ? 4 : 10,
+        isMobile ? 18 : 0,
+        isMobile ? 32 : 48,
       ),
       child: Column(
         children: [
           Text(
-            'Voices That Turn Ideas Into Impact',
+            'INSERT SOMETHING HERE',
             textAlign: TextAlign.center,
             style: GoogleFonts.kalnia(
-              fontSize: isMobile ? 38 : isTablet ? 54 : 76,
-              height: 0.98,
+              fontSize: isMobile ? 34 : isTablet ? 56 : 76,
+              height: 0.95,
               fontWeight: FontWeight.w600,
-              color: TestPage.green,
-              letterSpacing: isMobile ? 0.4 : 1.1,
+              letterSpacing: isMobile ? 0.8 : 2.4,
+              color: TestPage.accentRed,
             ),
           ),
-          SizedBox(height: isMobile ? 28 : 44),
+          SizedBox(height: isMobile ? 30 : isTablet ? 40 : 56),
           Flex(
             direction: stacked ? Axis.vertical : Axis.horizontal,
             crossAxisAlignment: stacked
                 ? CrossAxisAlignment.start
                 : CrossAxisAlignment.center,
             children: [
-              if (stacked) heroCopy else Expanded(flex: 6, child: heroCopy),
-              SizedBox(width: stacked ? 0 : 24, height: stacked ? 28 : 0),
               if (stacked)
-                heroGraphic
+                _HeroIntroText(isMobile: isMobile, isTablet: isTablet)
               else
-                Expanded(flex: 5, child: heroGraphic),
+                const Expanded(
+                  flex: 8,
+                  child: _HeroIntroText(isMobile: false, isTablet: false),
+                ),
+              SizedBox(
+                width: stacked ? 0 : 34,
+                height: stacked ? 28 : 0,
+              ),
+              if (stacked)
+                const Center(child: _HeroGraphic(isMobile: true, isTablet: true))
+              else
+                const Expanded(
+                  flex: 6,
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: _HeroGraphic(isMobile: false, isTablet: false),
+                  ),
+                ),
             ],
           ),
         ],
@@ -282,8 +264,8 @@ class _RedesignHeroSection extends StatelessWidget {
   }
 }
 
-class _RedesignAboutSection extends StatelessWidget {
-  const _RedesignAboutSection({
+class _HeroIntroText extends StatelessWidget {
+  const _HeroIntroText({
     required this.isMobile,
     required this.isTablet,
   });
@@ -293,40 +275,151 @@ class _RedesignAboutSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool stacked = isMobile || isTablet;
-    final headingBlock = SizedBox(
-      width: stacked ? double.infinity : 360,
-      child: Column(
-        crossAxisAlignment: stacked
-            ? CrossAxisAlignment.start
-            : CrossAxisAlignment.center,
-        children: [
-          Text(
-            'About Us',
-            textAlign: stacked ? TextAlign.left : TextAlign.center,
-            style: GoogleFonts.kalnia(
-              fontSize: isMobile ? 44 : isTablet ? 62 : 72,
-              height: 0.98,
-              fontWeight: FontWeight.w600,
-              color: TestPage.green,
-            ),
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: isMobile
+            ? double.infinity
+            : isTablet
+            ? 680
+            : 764,
+        minHeight: isMobile ? 0 : 220,
+      ),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          'A platform built for the youth, by the youth',
+          style: GoogleFonts.inriaSans(
+            fontSize: isMobile ? 24 : isTablet ? 32 : 40,
+            height: 1.15,
+            color: TestPage.green,
+            fontWeight: FontWeight.w400,
           ),
-          const SizedBox(height: 10),
-          const _RedesignScribbleDivider(),
-        ],
+        ),
       ),
     );
-    final aboutCopy = DefaultTextStyle(
+  }
+}
+
+class _HeroGraphic extends StatelessWidget {
+  const _HeroGraphic({
+    required this.isMobile,
+    required this.isTablet,
+  });
+
+  final bool isMobile;
+  final bool isTablet;
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: isMobile ? 330 : isTablet ? 420 : 520,
+      ),
+      child: Image.asset(
+        'lib/assets/mind_map.png',
+        fit: BoxFit.contain,
+      ),
+    );
+  }
+}
+
+class _AboutSection extends StatelessWidget {
+  const _AboutSection({
+    required this.isMobile,
+    required this.isTablet,
+  });
+
+  final bool isMobile;
+  final bool isTablet;
+
+  @override
+  Widget build(BuildContext context) {
+    final stacked = isMobile || isTablet;
+
+    return Container(
+      width: double.infinity,
+      color: TestPage.peach,
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 18 : isTablet ? 32 : 80,
+        vertical: isMobile ? 30 : isTablet ? 46 : 74,
+      ),
+      child: _ContentFrame(
+        child: Flex(
+          direction: stacked ? Axis.vertical : Axis.horizontal,
+          crossAxisAlignment: stacked
+              ? CrossAxisAlignment.start
+              : CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: stacked ? double.infinity : 540,
+              child: Column(
+                crossAxisAlignment: stacked
+                    ? CrossAxisAlignment.start
+                    : CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'About Us',
+                    textAlign: stacked ? TextAlign.left : TextAlign.center,
+                    style: GoogleFonts.kalnia(
+                      fontSize: isMobile ? 46 : isTablet ? 68 : 72,
+                      height: 0.96,
+                      letterSpacing: isMobile ? 0.4 : 1.4,
+                      fontWeight: FontWeight.w600,
+                      color: TestPage.green,
+                    ),
+                  ),
+                  SizedBox(height: isMobile ? 8 : 12),
+                  SizedBox(
+                    width: isMobile ? 240 : 300,
+                    height: 16,
+                    child: CustomPaint(painter: _ScribblePainter()),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: stacked ? 0 : 54,
+              height: stacked ? 28 : 0,
+            ),
+            if (stacked)
+              const _AboutCopy(isMobile: true, isTablet: true)
+            else
+              const Expanded(child: _AboutCopy(isMobile: false, isTablet: false)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AboutCopy extends StatelessWidget {
+  const _AboutCopy({
+    required this.isMobile,
+    required this.isTablet,
+  });
+
+  final bool isMobile;
+  final bool isTablet;
+
+  @override
+  Widget build(BuildContext context) {
+    final fontSize = isMobile
+        ? 17.0
+        : isTablet
+        ? 21.0
+        : 24.0;
+
+    return DefaultTextStyle(
       style: GoogleFonts.inriaSans(
-        fontSize: isMobile ? 19 : 24,
-        height: 1.45,
+        fontSize: fontSize,
+        height: 1.32,
         color: TestPage.ink,
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           Text(
-            'Right from its ideation, Yuvify aims to be a youth-driven platform to give voices a place to express their ideas and create an impact with meaningful content.',
+            'Right from its ideation , Yuvify aims to be a youth-driven platform to give voices a place  to express their ideas and create an impact with meaningful content.',
           ),
           SizedBox(height: 18),
           Text(
@@ -334,41 +427,21 @@ class _RedesignAboutSection extends StatelessWidget {
           ),
           SizedBox(height: 18),
           Text(
-            'Our mission is simple: to shape a generation that is aware, expressive and empowered to contribute to positive change through their innovations and ideas.',
+            'Our mission is simple— To shape a generation that is aware, expressive and empowered to contribute to a positive change through their innovations and ideas.',
           ),
           SizedBox(height: 18),
           Text(
-            'Yuvify isn’t just a platform. It’s a launchpad for the next generation.',
+            'Yuvify isn’t just a platform—it’s a launchpad for the next generation.',
             style: TextStyle(fontWeight: FontWeight.w700),
           ),
-        ],
-      ),
-    );
-
-    return Container(
-      width: double.infinity,
-      color: TestPage.peach,
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 20 : isTablet ? 32 : 80,
-        vertical: isMobile ? 34 : 58,
-      ),
-      child: Flex(
-        direction: stacked ? Axis.vertical : Axis.horizontal,
-        crossAxisAlignment: stacked
-            ? CrossAxisAlignment.start
-            : CrossAxisAlignment.center,
-        children: [
-          headingBlock,
-          SizedBox(width: stacked ? 0 : 48, height: stacked ? 28 : 0),
-          if (stacked) aboutCopy else Expanded(child: aboutCopy),
         ],
       ),
     );
   }
 }
 
-class _RedesignFormatsSection extends StatelessWidget {
-  const _RedesignFormatsSection({
+class _ProgramsSection extends StatelessWidget {
+  const _ProgramsSection({
     required this.isMobile,
     required this.isTablet,
   });
@@ -378,111 +451,163 @@ class _RedesignFormatsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool stacked = isMobile || isTablet;
-    final board = Container(
-      constraints: BoxConstraints(maxWidth: stacked ? 760 : 1000),
-      child: Image.asset(
-        'lib/assets/plan_notes.png',
-        fit: BoxFit.contain,
-      ),
-    );
-    final formatsCopy = Column(
-      crossAxisAlignment: stacked
-          ? CrossAxisAlignment.center
-          : CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Stories, podcasts and events that keep youth culture thoughtful, expressive and in motion.',
-          textAlign: stacked ? TextAlign.center : TextAlign.left,
-          style: GoogleFonts.kalnia(
-            fontSize: isMobile ? 28 : isTablet ? 40 : 52,
-            height: 1.02,
-            fontWeight: FontWeight.w600,
-            color: TestPage.green,
-          ),
-        ),
-        SizedBox(height: isMobile ? 18 : 24),
-        Text(
-          'From short-form content to curated conversations, every format is designed to help young people share perspectives, discover ideas and create real-world resonance.',
-          textAlign: stacked ? TextAlign.center : TextAlign.left,
-          style: GoogleFonts.inriaSans(
-            fontSize: isMobile ? 18 : 22,
-            height: 1.5,
-            color: TestPage.ink,
-          ),
-        ),
-      ],
-    );
+    final stacked = isMobile || isTablet;
 
     return Padding(
       padding: EdgeInsets.fromLTRB(
-        isMobile ? 20 : 32,
-        isMobile ? 28 : 34,
-        isMobile ? 20 : 40,
-        isMobile ? 34 : 30,
+        isMobile ? 18 : 32,
+        isMobile ? 26 : 30,
+        isMobile ? 18 : 44,
+        isMobile ? 26 : 28,
       ),
-      child: Flex(
-        direction: stacked ? Axis.vertical : Axis.horizontal,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          if (stacked) board else Expanded(flex: 7, child: board),
-          SizedBox(width: stacked ? 0 : 36, height: stacked ? 26 : 0),
-          if (stacked)
-            formatsCopy
-          else
-            Expanded(flex: 4, child: formatsCopy),
-        ],
+      child: _ContentFrame(
+        child: Flex(
+          direction: stacked ? Axis.vertical : Axis.horizontal,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (stacked)
+              const _PinBoardImage(isMobile: true, isTablet: true)
+            else
+              const Expanded(
+                flex: 8,
+                child: _PinBoardImage(isMobile: false, isTablet: false),
+              ),
+            SizedBox(
+              width: stacked ? 0 : 44,
+              height: stacked ? 28 : 0,
+            ),
+            SizedBox(
+              width: stacked ? double.infinity : 505,
+              child: Text(
+                'insert\ntext here',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.kalnia(
+                  fontSize: isMobile ? 34 : isTablet ? 54 : 72,
+                  height: 0.95,
+                  letterSpacing: isMobile ? 0.8 : 2,
+                  fontWeight: FontWeight.w600,
+                  color: TestPage.accentRed,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _RedesignFooterSection extends StatelessWidget {
-  const _RedesignFooterSection({required this.isMobile});
+class _PinBoardImage extends StatelessWidget {
+  const _PinBoardImage({
+    required this.isMobile,
+    required this.isTablet,
+  });
 
   final bool isMobile;
+  final bool isTablet;
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: isMobile
+            ? double.infinity
+            : isTablet
+            ? 780
+            : 1000,
+      ),
+      child: Image.asset(
+        'lib/assets/plan_notes.png',
+        fit: BoxFit.contain,
+      ),
+    );
+  }
+}
+
+class _FooterSection extends StatelessWidget {
+  const _FooterSection({
+    required this.isMobile,
+    required this.isTablet,
+  });
+
+  final bool isMobile;
+  final bool isTablet;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       color: TestPage.peach,
-      padding: EdgeInsets.fromLTRB(20, isMobile ? 22 : 28, 20, 18),
-      child: Column(
-        children: [
-          Container(
-            height: 3,
-            width: double.infinity,
-            color: TestPage.brown,
-          ),
-          SizedBox(height: isMobile ? 18 : 16),
-          Text(
-            'For Support, Collaborations and Queries,\ndrop us an e-mail at',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inriaSans(
-              fontSize: isMobile ? 18 : 24,
-              height: 1.35,
-              color: TestPage.ink,
+      padding: EdgeInsets.fromLTRB(
+        0,
+        isMobile ? 10 : 0,
+        0,
+        isMobile ? 12 : 14,
+      ),
+      child: _ContentFrame(
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              height: 4,
+              color: TestPage.brown,
             ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'info@yuvify.in',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inriaSans(
-              fontSize: isMobile ? 24 : 32,
-              fontWeight: FontWeight.w700,
-              color: TestPage.green,
+            SizedBox(height: isMobile ? 14 : 16),
+            Text(
+              'For Support, Collaborations and Queries,\ndrop us an e-mail at',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inriaSans(
+                fontSize: isMobile
+                    ? 16
+                    : isTablet
+                    ? 20
+                    : 24,
+                height: 1.28,
+                color: TestPage.ink,
+              ),
             ),
-          ),
-        ],
+            SizedBox(height: isMobile ? 10 : 12),
+            Text(
+              'info@yuvify.in',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inriaSans(
+                fontSize: isMobile
+                    ? 22
+                    : isTablet
+                    ? 26
+                    : 32,
+                fontWeight: FontWeight.w700,
+                color: TestPage.green,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _RedesignHeaderButton extends StatelessWidget {
-  const _RedesignHeaderButton({required this.label, this.onTap});
+class _ContentFrame extends StatelessWidget {
+  const _ContentFrame({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1440),
+        child: child,
+      ),
+    );
+  }
+}
+
+class _HeaderButton extends StatelessWidget {
+  const _HeaderButton({
+    required this.label,
+    this.onTap,
+  });
 
   final String label;
   final VoidCallback? onTap;
@@ -490,15 +615,19 @@ class _RedesignHeaderButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: onTap ?? () {},
+      onPressed: onTap,
       style: TextButton.styleFrom(
         foregroundColor: TestPage.ink,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       child: Text(
         label,
         style: GoogleFonts.kalnia(
           fontSize: 24,
+          height: 1.0,
+          fontWeight: FontWeight.w400,
           color: TestPage.ink,
         ),
       ),
@@ -506,47 +635,32 @@ class _RedesignHeaderButton extends StatelessWidget {
   }
 }
 
-class _RedesignDrawerNavTile extends StatelessWidget {
-  const _RedesignDrawerNavTile({required this.label, required this.onTap});
+class _DrawerNavTile extends StatelessWidget {
+  const _DrawerNavTile({
+    required this.label,
+    this.onTap,
+  });
 
   final String label;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        contentPadding: EdgeInsets.zero,
-        title: Text(
-          label,
-          style: GoogleFonts.kalnia(
-            fontSize: 28,
-            color: TestPage.green,
-          ),
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      onTap: onTap,
+      title: Text(
+        label,
+        style: GoogleFonts.kalnia(
+          fontSize: 28,
+          color: TestPage.green,
         ),
-        onTap: onTap,
       ),
     );
   }
 }
 
-class _RedesignScribbleDivider extends StatelessWidget {
-  const _RedesignScribbleDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 260,
-      height: 18,
-      child: CustomPaint(
-        painter: _RedesignScribblePainter(),
-      ),
-    );
-  }
-}
-
-class _RedesignScribblePainter extends CustomPainter {
+class _ScribblePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
@@ -555,17 +669,17 @@ class _RedesignScribblePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
-    final path = Path()..moveTo(0, size.height * 0.65);
+    final path = Path()..moveTo(0, size.height * 0.58);
     final segmentWidth = size.width / 12;
 
-    for (int i = 0; i < 12; i++) {
-      final dx = segmentWidth * (i + 1);
-      final dy = i.isEven ? size.height * 0.45 : size.height * 0.82;
+    for (int index = 0; index < 12; index++) {
+      final dx = segmentWidth * (index + 1);
+      final controlY = index.isEven ? size.height * 0.32 : size.height * 0.88;
       path.quadraticBezierTo(
         dx - (segmentWidth / 2),
-        dy,
+        controlY,
         dx,
-        size.height * 0.65,
+        size.height * 0.58,
       );
     }
 
