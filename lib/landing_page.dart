@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ComingSoon extends StatefulWidget {
-  const ComingSoon({super.key});
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
 
   static const Color _brandBrown = Color.fromRGBO(134, 110, 83, 1);
 
   @override
-  State<ComingSoon> createState() => _ComingSoonState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _ComingSoonState extends State<ComingSoon> {
+class _MainPageState extends State<MainPage> {
   final GlobalKey _aboutSectionKey = GlobalKey();
 
   Future<void> _scrollToAbout() async {
@@ -289,7 +289,7 @@ class _ComingSoonState extends State<ComingSoon> {
                                 height: useNarrowLayout ? 5 : 6,
                                 width: useNarrowLayout ? 180 : 100,
                                 decoration: BoxDecoration(
-                                  color: ComingSoon._brandBrown,
+                                  color: MainPage._brandBrown,
                                   borderRadius: BorderRadius.circular(999),
                                 ),
                               ),
@@ -414,7 +414,7 @@ class _MobileNavTile extends StatelessWidget {
       title: Text(
         label,
         style: GoogleFonts.kalnia(
-          color: ComingSoon._brandBrown,
+          color: MainPage._brandBrown,
           fontSize: 28,
           fontWeight: FontWeight.w500,
         ),
@@ -445,12 +445,12 @@ class _NavButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           minimumSize: Size.zero,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          foregroundColor: ComingSoon._brandBrown,
+          foregroundColor: MainPage._brandBrown,
         ),
         child: Text(
           label,
           style: GoogleFonts.kalnia(
-            color: ComingSoon._brandBrown,
+            color: MainPage._brandBrown,
             fontSize: fontSize,
           ),
         ),
