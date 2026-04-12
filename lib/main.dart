@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:yuvify_website/landing_page.dart';
-import 'package:yuvify_website/landing_page_harshit.dart';
+import 'package:yuvify_website/pages/career_page.dart';
 
 void main() {
+  usePathUrlStrategy();
   runApp(const MyApp());
 }
 
@@ -15,7 +17,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Yuvify',
-      home: const TestPage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => MainPage(),
+        '/careers': (context) => CareersPage(),
+      },
     );
   }
 }
