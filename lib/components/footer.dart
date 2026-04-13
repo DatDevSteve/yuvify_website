@@ -6,7 +6,7 @@ class YuvifyFooter extends StatelessWidget {
   const YuvifyFooter({
     super.key,
     this.websiteUrl = 'https://www.yuvify.in',
-    this.instagramUrl,
+    this.instagramUrl = 'https://www.instagram.com/yuvify.in?igsh=ZnFqdmNkNWN2YXh0',
     this.linkedinUrl,
     this.backgroundColor = const Color(0x80EFD2B0),
     this.textColor = const Color(0xFF275A47),
@@ -95,7 +95,7 @@ class YuvifyFooter extends StatelessWidget {
                           child: Text(
                             'www.yuvify.in',
                             style: GoogleFonts.kalnia(
-                              fontSize: 42,
+                              fontSize: 35,
                               height: 1,
                               fontWeight: FontWeight.w500,
                               color: textColor,

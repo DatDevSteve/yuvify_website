@@ -40,10 +40,20 @@ class YuvifyHeader extends StatelessWidget implements PreferredSizeWidget {
             children: [
               Padding(
                 padding: EdgeInsets.only(right: isCompact ? 8 : 12),
-                child: Image.asset(
-                  'lib/assets/logo_text.png',
-                  fit: BoxFit.contain,
-                  height: isCompact ? 46 : 90,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () => _openRoute(context, '/'),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 2,
+                    ),
+                    child: Image.asset(
+                      'lib/assets/logo_text.png',
+                      fit: BoxFit.contain,
+                      height: isCompact ? 46 : 90,
+                    ),
+                  ),
                 ),
               ),
               const Spacer(),
