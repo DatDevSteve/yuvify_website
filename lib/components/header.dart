@@ -73,7 +73,7 @@ class YuvifyHeader extends StatelessWidget implements PreferredSizeWidget {
                 _HeaderButton(
                   label: 'Contact Us',
                   fontSize: 26,
-                  onPressed: () {},
+                  onPressed: () => _openRoute(context, '/contact'),
                 ),
               ],
             ],
