@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:yuvify_website/pages/about_page.dart';
-import 'package:yuvify_website/pages/career_page.dart';
-import 'package:yuvify_website/pages/event_page.dart';
-
 class YuvifyHeader extends StatelessWidget implements PreferredSizeWidget {
   const YuvifyHeader({
     super.key,
@@ -15,28 +11,8 @@ class YuvifyHeader extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(isCompact ? 76 : 88);
 
-  void _openAbout(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) => const AboutPage(),
-      ),
-    );
-  }
-
-  void _openCareers(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) => const CareersPage(),
-      ),
-    );
-  }
-
-  void _openEvents(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) => const EventsPage(),
-      ),
-    );
+  void _openRoute(BuildContext context, String route) {
+    Navigator.of(context).pushNamed(route);
   }
 
   @override
@@ -84,15 +60,15 @@ class YuvifyHeader extends StatelessWidget implements PreferredSizeWidget {
               else ...[
                 _HeaderButton(
                   label: 'About',
-                  onPressed: () => _openAbout(context),
+                  onPressed: () => _openRoute(context, '/about'),
                 ),
                 _HeaderButton(
                   label: 'Careers',
-                  onPressed: () => _openCareers(context),
+                  onPressed: () => _openRoute(context, '/careers'),
                 ),
                 _HeaderButton(
                   label: 'Events',
-                  onPressed: () => _openEvents(context),
+                  onPressed: () => _openRoute(context, '/events'),
                 ),
                 _HeaderButton(
                   label: 'Contact Us',
@@ -111,31 +87,9 @@ class YuvifyHeader extends StatelessWidget implements PreferredSizeWidget {
 class YuvifyHeaderDrawer extends StatelessWidget {
   const YuvifyHeaderDrawer({super.key});
 
-  void _openAbout(BuildContext context) {
+  void _openRoute(BuildContext context, String route) {
     Navigator.of(context).pop();
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) => const AboutPage(),
-      ),
-    );
-  }
-
-  void _openCareers(BuildContext context) {
-    Navigator.of(context).pop();
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) => const CareersPage(),
-      ),
-    );
-  }
-
-  void _openEvents(BuildContext context) {
-    Navigator.of(context).pop();
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) => const EventsPage(),
-      ),
-    );
+    Navigator.of(context).pushNamed(route);
   }
 
   @override
@@ -148,15 +102,15 @@ class YuvifyHeaderDrawer extends StatelessWidget {
           children: [
             YuvifyHeaderDrawerTile(
               label: 'About',
-              onTap: () => _openAbout(context),
+              onTap: () => _openRoute(context, '/about'),
             ),
             YuvifyHeaderDrawerTile(
               label: 'Careers',
-              onTap: () => _openCareers(context),
+              onTap: () => _openRoute(context, '/careers'),
             ),
             YuvifyHeaderDrawerTile(
               label: 'Events',
-              onTap: () => _openEvents(context),
+              onTap: () => _openRoute(context, '/events'),
             ),
             const YuvifyHeaderDrawerTile(
               label: 'Contact Us',

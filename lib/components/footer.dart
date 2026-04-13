@@ -40,10 +40,7 @@ class YuvifyFooter extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         color: backgroundColor,
-        border: Border.all(
-          color: borderColor,
-          width: borderWidth,
-        ),
+        border: Border.all(color: borderColor, width: borderWidth),
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(topCornerRadius),
           topRight: Radius.circular(topCornerRadius),
@@ -51,13 +48,11 @@ class YuvifyFooter extends StatelessWidget {
       ),
       padding: EdgeInsets.symmetric(
         horizontal: isCompact ? 20 : 40,
-        vertical: isCompact ? 20 : 28,
+        vertical: isCompact ? 18 : 10,
       ),
       child: Flex(
         direction: isCompact ? Axis.vertical : Axis.horizontal,
-        crossAxisAlignment: isCompact
-            ? CrossAxisAlignment.start
-            : CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           InkWell(
@@ -65,33 +60,57 @@ class YuvifyFooter extends StatelessWidget {
             onTap: () => _openLink(websiteUrl),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset(
-                    'lib/assets/logo_transparent.png',
-                    height: isCompact ? 56 : 72,
-                    fit: BoxFit.contain,
-                  ),
-                  SizedBox(width: isCompact ? 10 : 14),
-                  Flexible(
-                    child: Text(
-                      'www.yuvify.in',
-                      style: GoogleFonts.kalnia(
-                        fontSize: isCompact ? 30 : 42,
-                        height: 1,
-                        fontWeight: FontWeight.w500,
-                        color: textColor,
-                      ),
+              child: isCompact
+                  ? Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'lib/assets/logo_transparent.png',
+                          height: 46,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'www.yuvify.in',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.kalnia(
+                            fontSize: 22,
+                            height: 1,
+                            fontWeight: FontWeight.w500,
+                            color: textColor,
+                          ),
+                        ),
+                      ],
+                    )
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'lib/assets/logo_transparent.png',
+                          height: 72,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(width: 14),
+                        Flexible(
+                          child: Text(
+                            'www.yuvify.in',
+                            style: GoogleFonts.kalnia(
+                              fontSize: 42,
+                              height: 1,
+                              fontWeight: FontWeight.w500,
+                              color: textColor,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
             ),
           ),
-          SizedBox(width: isCompact ? 0 : 24, height: isCompact ? 18 : 0),
-          Row(
-            mainAxisSize: MainAxisSize.min,
+          SizedBox(width: isCompact ? 0 : 24, height: isCompact ? 14 : 0),
+          Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: isCompact ? 12 : 18,
             children: [
               _FooterIconButton(
                 assetPath: 'lib/assets/instagram.png',
@@ -99,16 +118,15 @@ class YuvifyFooter extends StatelessWidget {
                 onTap: instagramUrl == null
                     ? null
                     : () => _openLink(instagramUrl!),
-                size: isCompact ? 48 : 64,
+                size: isCompact ? 42 : 64,
               ),
-              SizedBox(width: isCompact ? 12 : 18),
               _FooterIconButton(
                 assetPath: 'lib/assets/linkedin.png',
                 semanticLabel: 'LinkedIn',
                 onTap: linkedinUrl == null
                     ? null
                     : () => _openLink(linkedinUrl!),
-                size: isCompact ? 48 : 64,
+                size: isCompact ? 42 : 64,
               ),
             ],
           ),
