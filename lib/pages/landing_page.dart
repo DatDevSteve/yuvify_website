@@ -1,31 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:yuvify_website/components/footer.dart';
+import 'package:yuvify_website/components/header.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
-
-  static const Color _brandBrown = Color.fromRGBO(134, 110, 83, 1);
 
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  final GlobalKey _aboutSectionKey = GlobalKey();
-
-  Future<void> _scrollToAbout() async {
-    final context = _aboutSectionKey.currentContext;
-    if (context == null) return;
-
-    await Scrollable.ensureVisible(
-      context,
-      duration: const Duration(milliseconds: 700),
-      curve: Curves.easeInOutCubic,
-      alignment: 0.08,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.sizeOf(context);
@@ -37,94 +22,8 @@ class _MainPageState extends State<MainPage> {
 
     return Scaffold(
       backgroundColor: const Color.fromRGBO(254, 255, 239, 1),
-      endDrawer: useNarrowLayout
-          ? Drawer(
-              backgroundColor: const Color.fromRGBO(254, 255, 239, 1),
-              child: SafeArea(
-                child: ListView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 24,
-                  ),
-                  children: [
-                    _MobileNavTile(
-                      label: "About",
-                      onTap: () {
-                        Navigator.of(context).pop();
-                        _scrollToAbout();
-                      },
-                    ),
-                    _MobileNavTile(label: "Careers", onTap: () {}),
-                    _MobileNavTile(label: "Events", onTap: () {}),
-                    _MobileNavTile(label: "Contact Us", onTap: () {}),
-                  ],
-                ),
-              ),
-            )
-          : null,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(useNarrowLayout ? 76 : 88),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: useNarrowLayout ? 10 : 24),
-          child: Material(
-            elevation: 10,
-            shadowColor: Colors.black,
-            color: const Color.fromARGB(164, 254, 255, 239),
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(20),
-            ),
-            child: Container(
-              height: useNarrowLayout ? 76 : 88,
-              padding: EdgeInsets.fromLTRB(
-                useNarrowLayout ? 14 : 24,
-                useNarrowLayout ? 8 : 8,
-                useNarrowLayout ? 12 : 24,
-                useNarrowLayout ? 8 : 8,
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      0,
-                      0,
-                      useNarrowLayout ? 8 : 12,
-                      0,
-                    ),
-                    child: Image.asset(
-                      'lib/assets/logo_text.png',
-                      fit: BoxFit.contain,
-                      height: useNarrowLayout ? 46 : 90,
-                    ),
-                  ),
-                  const Spacer(),
-                  if (useNarrowLayout)
-                    Builder(
-                      builder: (context) => IconButton(
-                        onPressed: () => Scaffold.of(context).openEndDrawer(),
-                        icon: const Icon(Icons.menu_rounded),
-                        color: const Color.fromRGBO(34, 34, 34, 1),
-                        iconSize: 30,
-                        splashRadius: 24,
-                      ),
-                    )
-                  else ...[
-                    _NavButton(label: "About", onPressed: _scrollToAbout),
-                    _NavButton(label: "Careers", onPressed: () {}),
-                    _NavButton(label: "Events", onPressed: () {}),
-                    _NavButton(
-                      label: "Contact Us",
-                      fontSize: 26,
-                      onPressed: () {},
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
+      endDrawer: useNarrowLayout ? const YuvifyHeaderDrawer() : null,
+      appBar: YuvifyHeader(isCompact: useNarrowLayout),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -222,108 +121,103 @@ class _MainPageState extends State<MainPage> {
                   SizedBox(
                     height: useNarrowLayout ? (useCompactHero ? 72 : 120) : 300,
                   ),
-                  KeyedSubtree(
-                    key: _aboutSectionKey,
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        final isCompact = constraints.maxWidth < 1100;
-                        final aboutTextWidth = isCompact
-                            ? double.infinity
-                            : (constraints.maxWidth * 0.66).clamp(560.0, 960.0);
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isCompact = constraints.maxWidth < 1100;
+                      final aboutTextWidth = isCompact
+                          ? double.infinity
+                          : (constraints.maxWidth * 0.66).clamp(560.0, 960.0);
 
-                        final aboutCopy = Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _AboutParagraph(
-                              text:
-                                  "Right from its ideation, Yuvify aims to be a youth-driven platform to give voices a place to express their ideas and create an impact with meaningful content.",
-                              fontSize: useNarrowLayout ? 22 : 32,
-                            ),
-                            SizedBox(height: useNarrowLayout ? 24 : 28),
-                            _AboutParagraph(
-                              text:
-                                  "We aim to bring together ideas, perspectives and individuals to create impactful conversations through podcasts, content creation and curated events which actually mean something.",
-                              fontSize: useNarrowLayout ? 22 : 32,
-                            ),
-                            SizedBox(height: useNarrowLayout ? 24 : 28),
-                            _AboutParagraph(
-                              text:
-                                  "Our mission is simple: to shape a generation that is aware, expressive and empowered to contribute to positive change through their innovations and ideas.",
-                              fontSize: useNarrowLayout ? 22 : 32,
-                            ),
-                            SizedBox(height: useNarrowLayout ? 24 : 28),
-                            Text(
-                              "Yuvify isn't just a platform, it's a launchpad for the next generation.",
-                              style: GoogleFonts.inriaSans(
-                                fontSize: useNarrowLayout ? 24 : 32,
-                                height: 1.4,
-                                fontWeight: FontWeight.w700,
-                                color: const Color.fromRGBO(34, 34, 34, 1),
-                              ),
-                            ),
-                          ],
-                        );
-
-                        final aboutHeading = SizedBox(
-                          width: isCompact ? double.infinity : 420,
-                          child: Column(
-                            crossAxisAlignment: useNarrowLayout
-                                ? CrossAxisAlignment.center
-                                : isCompact
-                                ? CrossAxisAlignment.start
-                                : CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                "About Us",
-                                style: GoogleFonts.kalnia(
-                                  fontSize: useNarrowLayout
-                                      ? 48
-                                      : isCompact
-                                      ? 64
-                                      : 85,
-                                  fontWeight: FontWeight.w600,
-                                  color: const Color.fromRGBO(5, 91, 71, 1),
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Container(
-                                height: useNarrowLayout ? 5 : 6,
-                                width: useNarrowLayout ? 180 : 100,
-                                decoration: BoxDecoration(
-                                  color: MainPage._brandBrown,
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                              ),
-                            ],
+                      final aboutCopy = Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _AboutParagraph(
+                            text:
+                                "Right from its ideation, Yuvify aims to be a youth-driven platform to give voices a place to express their ideas and create an impact with meaningful content.",
+                            fontSize: useNarrowLayout ? 22 : 32,
                           ),
-                        );
+                          SizedBox(height: useNarrowLayout ? 24 : 28),
+                          _AboutParagraph(
+                            text:
+                                "We aim to bring together ideas, perspectives and individuals to create impactful conversations through podcasts, content creation and curated events which actually mean something.",
+                            fontSize: useNarrowLayout ? 22 : 32,
+                          ),
+                          SizedBox(height: useNarrowLayout ? 24 : 28),
+                          _AboutParagraph(
+                            text:
+                                "Our mission is simple: to shape a generation that is aware, expressive and empowered to contribute to positive change through their innovations and ideas.",
+                            fontSize: useNarrowLayout ? 22 : 32,
+                          ),
+                          SizedBox(height: useNarrowLayout ? 24 : 28),
+                          Text(
+                            "Yuvify isn't just a platform, it's a launchpad for the next generation.",
+                            style: GoogleFonts.inriaSans(
+                              fontSize: useNarrowLayout ? 24 : 32,
+                              height: 1.4,
+                              fontWeight: FontWeight.w700,
+                              color: const Color.fromRGBO(34, 34, 34, 1),
+                            ),
+                          ),
+                        ],
+                      );
 
-                        if (useNarrowLayout) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              aboutHeading,
-                              const SizedBox(height: 34),
-                              aboutCopy,
-                            ],
-                          );
-                        }
-
-                        return Flex(
-                          direction: isCompact
-                              ? Axis.vertical
-                              : Axis.horizontal,
-                          crossAxisAlignment: isCompact
+                      final aboutHeading = SizedBox(
+                        width: isCompact ? double.infinity : 420,
+                        child: Column(
+                          crossAxisAlignment: useNarrowLayout
+                              ? CrossAxisAlignment.center
+                              : isCompact
                               ? CrossAxisAlignment.start
                               : CrossAxisAlignment.center,
                           children: [
-                            SizedBox(width: aboutTextWidth, child: aboutCopy),
-                            const Spacer(),
+                            Text(
+                              "About Us",
+                              style: GoogleFonts.kalnia(
+                                fontSize: useNarrowLayout
+                                    ? 48
+                                    : isCompact
+                                    ? 64
+                                    : 85,
+                                fontWeight: FontWeight.w600,
+                                color: const Color.fromRGBO(5, 91, 71, 1),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Container(
+                              height: useNarrowLayout ? 5 : 6,
+                              width: useNarrowLayout ? 180 : 100,
+                              decoration: BoxDecoration(
+                                color: const Color.fromRGBO(134, 110, 83, 1),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (useNarrowLayout) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             aboutHeading,
+                            const SizedBox(height: 34),
+                            aboutCopy,
                           ],
                         );
-                      },
-                    ),
+                      }
+
+                      return Flex(
+                        direction: isCompact ? Axis.vertical : Axis.horizontal,
+                        crossAxisAlignment: isCompact
+                            ? CrossAxisAlignment.start
+                            : CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(width: aboutTextWidth, child: aboutCopy),
+                          const Spacer(),
+                          aboutHeading,
+                        ],
+                      );
+                    },
                   ),
                   SizedBox(height: useNarrowLayout ? 80 : 200),
                   Image.asset(
@@ -357,64 +251,6 @@ class _AboutParagraph extends StatelessWidget {
         fontSize: fontSize,
         height: 1.4,
         color: const Color.fromRGBO(34, 34, 34, 1),
-      ),
-    );
-  }
-}
-
-class _MobileNavTile extends StatelessWidget {
-  const _MobileNavTile({required this.label, required this.onTap});
-
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      title: Text(
-        label,
-        style: GoogleFonts.kalnia(
-          color: MainPage._brandBrown,
-          fontSize: 28,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      onTap: onTap,
-    );
-  }
-}
-
-class _NavButton extends StatelessWidget {
-  const _NavButton({
-    required this.label,
-    required this.onPressed,
-    this.fontSize = 28,
-  });
-
-  final String label;
-  final VoidCallback onPressed;
-  final double fontSize;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6),
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          minimumSize: Size.zero,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          foregroundColor: MainPage._brandBrown,
-        ),
-        child: Text(
-          label,
-          style: GoogleFonts.kalnia(
-            color: MainPage._brandBrown,
-            fontSize: fontSize,
-          ),
-        ),
       ),
     );
   }
