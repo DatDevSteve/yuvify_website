@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:yuvify_website/landing_page.dart';
+import 'package:yuvify_website/pages/landing_page.dart';
 import 'package:yuvify_website/pages/career_page.dart';
 
 void main() {

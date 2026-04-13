@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:yuvify_website/components/footer.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -330,51 +331,11 @@ class _MainPageState extends State<MainPage> {
                     width: useNarrowLayout ? screenWidth - 24 : null,
                     fit: BoxFit.contain,
                   ),
-                  SizedBox(height: useNarrowLayout ? 120 : 300),
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: useNarrowLayout ? 16 : 24,
-                      vertical: useNarrowLayout ? 32 : 44,
-                    ),
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        top: BorderSide(
-                          color: Color.fromRGBO(134, 110, 83, 1),
-                          width: 3,
-                        ),
-                      ),
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "For Support, Collaborations and Queries,\ndrop us an e-mail at",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.inriaSans(
-                              fontSize: useNarrowLayout ? 18 : 24,
-                              height: 1.3,
-                              color: const Color.fromRGBO(34, 34, 34, 1),
-                            ),
-                          ),
-                          SizedBox(height: useNarrowLayout ? 20 : 28),
-                          Text(
-                            "info@yuvify.in",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.inriaSans(
-                              fontSize: useNarrowLayout ? 22 : 26,
-                              fontWeight: FontWeight.w700,
-                              color: const Color.fromRGBO(5, 91, 71, 1),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  SizedBox(height: useNarrowLayout ? 80 : 140),
                 ],
               ),
             ),
+            YuvifyFooter(),
           ],
         ),
       ),
